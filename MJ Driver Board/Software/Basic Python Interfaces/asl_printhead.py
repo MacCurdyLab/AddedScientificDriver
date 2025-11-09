@@ -90,6 +90,27 @@ class Driver:
         #print(self.retrun)
         self.retrun = ""
 
+    def activate_nozzles(self, head_mask=[], command='all_on'):
+        # Activate nozzles based on contents of head_mask. 
+        nozzle_count = 128
+         # Activate all nozzles
+        if command == 'all_on':
+            head_mask = [1]*nozzle_count
+
+        elif command == 'all_off':
+            head_mask = [0]*nozzle_count
+
+        elif command == 'every_other_1':
+            head_mask = [i % 2 for i in range(nozzle_count)]
+
+        elif command == 'every_other_2':
+            head_mask = [(i + 1) % 2 for i in range(nozzle_count)]
+
+        send_value = int("".join(str(bit) for bit in head_mask), 2)
+        send_value_bytes = send_value.to_bytes(16, byteorder='big')    
+        
+        self.serial_write(f"s {send_value_bytes}".encode())  # Send command to activate nozzles
+
     def send_image(self, headIdx, image_path, whiteSpace=0):
         """
         Sends an image to the driver.
