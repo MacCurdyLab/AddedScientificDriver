@@ -89,6 +89,26 @@ class Driver:
             self.retrun += self.ser.read().decode("utf-8")
         #print(self.retrun)
         self.retrun = ""
+    
+    def fill_head(self):
+        # Fill all nozzles in dropwatching mode
+        self.serial_write(f"I 1".encode())  # Set start position
+
+    def clear_head(self):
+        # Turn off all nozzles in drop watching mode
+        self.serial_write(f"C".encode())  # Set start position
+
+    def activate_nozzle_span(self, head_index=1, start_nozzle=1, span_length=128):
+        # Activate a span of nozzles on a specific head
+        # Input Checking
+        if head_index < 1 or head_index > 4:
+            raise ValueError("head_index must be between 1 and 4")
+        if start_nozzle < 1 or start_nozzle > 128:
+            raise ValueError("start_nozzle must be between 1 and 128")
+        if span_length < 1 or (start_nozzle + span_length - 1) > 128:
+            raise ValueError("span_length is out of range")
+        
+        self.serial_write(f"N {head_index} {start_nozzle} {span_length}".encode())  # Send command to activate nozzles
 
     def activate_nozzles(self, head_mask=[], command='all_on'):
         # Activate nozzles based on contents of head_mask. 
@@ -338,8 +358,6 @@ class Driver:
         self.listener_thread.join()
         print("Background thread killed.")
 
-    def fillHead(self):
-        self.serial_write(f"I 1".encode())  # Set start position
 
 
 
