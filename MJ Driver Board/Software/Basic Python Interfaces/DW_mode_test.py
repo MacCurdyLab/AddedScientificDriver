@@ -38,4 +38,5 @@ while time.time() - start_time < 10:
     time.sleep(1)
 
 driver_1.clear_head()
+driver_1.power_off()
 driver_1.stop_listener()
