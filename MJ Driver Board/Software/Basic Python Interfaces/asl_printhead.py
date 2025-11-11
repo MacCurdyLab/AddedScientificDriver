@@ -36,7 +36,7 @@ class Driver:
         self.serial_write("O".encode())  # Turn board on
         time.sleep(1)
 
-    def head_reset(self):
+    def board_reset(self):
         """
         Soft Reset the board.
         """
