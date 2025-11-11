@@ -88,6 +88,10 @@ class Driver:
         # Set specific head to temperature in °C
         self.serial_write(f"T {head_index} {temperature}".encode())  # Set temperature
     
+    def stop_head_heating(self):
+        # Immediately stop head heating on all heads
+        self.serial_write(f"S".encode())
+
     def set_start_position(self, start_position=1000):
         """
         Sets the start position from the current position.
@@ -112,11 +116,11 @@ class Driver:
         #print(self.retrun)
         self.retrun = ""
     
-    def fill_head(self):
+    def fill_head(self, head_index=1):
         # Fill all nozzles in dropwatching mode
-        self.serial_write(f"I 1".encode())
+        self.serial_write(f"I {head_index}".encode())
 
-    def clear_head(self):
+    def clear_heads(self):
         # Turn off all nozzles in drop watching mode
         self.serial_write(f"C".encode())  # Set start position
 
