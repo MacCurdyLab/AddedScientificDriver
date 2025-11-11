@@ -38,7 +38,7 @@ class Driver:
 
     def head_reset(self):
         """
-        Powers on the board.
+        Soft Reset the board.
         """
         self.serial_write("r".encode())  # Turn board on
 
@@ -60,12 +60,34 @@ class Driver:
         """
         self.serial_write(f"p {frequency}".encode())  # Set printing frequency
 
+    def set_voltage(self, head_index=1, voltage=35):
+        # Set amplitude of voltage waveform for a specific head
+        self.serial_write(f"v {head_index} {voltage}".encode())  # Set voltage
+
     def poll_board(self):
         """
-        Sets the printing frequency.
+        Polls the board for its current status. Reply from board is handled in background thread.
         """
         self.serial_write(f"b".encode())  # Set printing frequency
 
+    def check_head_temperatures(self):
+        # Poll board for current head temperatures
+        # Theres a command for this, but it would involve parsing a different resonse than the default JSON
+        # self.serial_write(f"t".encode())  # poll temperature command
+        
+        self.poll_board()
+        time.sleep(0.2)
+        head_list = self.get_json_element('heads')
+        status_dict = {}
+        for i, head in enumerate(head_list):
+            status_dict[f"head_{i+1}"] = head.get('curTemperature')
+
+        return status_dict
+    
+    def set_head_temperature(self, head_index=1, temperature=21):
+        # Set specific head to temperature in °C
+        self.serial_write(f"T {head_index} {temperature}".encode())  # Set temperature
+    
     def set_start_position(self, start_position=1000):
         """
         Sets the start position from the current position.
@@ -92,7 +114,7 @@ class Driver:
     
     def fill_head(self):
         # Fill all nozzles in dropwatching mode
-        self.serial_write(f"I 1".encode())  # Set start position
+        self.serial_write(f"I 1".encode())
 
     def clear_head(self):
         # Turn off all nozzles in drop watching mode
@@ -232,7 +254,7 @@ class Driver:
             if self.ser.in_waiting:
                 # Read the data from the serial port
                 incoming_data = self.ser.read(self.ser.in_waiting).decode("utf-8")
-                #print(incoming_data)
+                # print(incoming_data)
                 buffer += incoming_data
                 if not buffer.strip().startswith("{"):
                     buffer = ""
