@@ -38,5 +38,11 @@ while time.time() - start_time < 10:
     time.sleep(1)
 
 driver_1.clear_head()
-driver_1.power_off()
+
+# If running this script multiple times, leave the power off command commented out.
+# This keeps the heater on between runs to stabilize temperature
+# On your final run, uncomment the power off command to properly shut down the driver
+# driver_1.power_off()
+
+# Terminate listener thread
 driver_1.stop_listener()
