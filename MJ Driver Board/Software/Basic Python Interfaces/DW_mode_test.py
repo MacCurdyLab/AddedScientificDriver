@@ -37,7 +37,7 @@ driver_1.activate_nozzle_span(1, 1, 128)
 while time.time() - start_time < 10:
     time.sleep(1)
 
-driver_1.clear_head()
+driver_1.clear_heads()
 
 # If running this script multiple times, leave the power off command commented out.
 # This keeps the heater on between runs to stabilize temperature

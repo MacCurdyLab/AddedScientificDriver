@@ -224,6 +224,22 @@ class Driver:
 
         return False
     
+    def slice_image(self, image_path):
+        """ 
+        Slice image into 128 pixel wide segments for sending to the driver.
+        """
+        image = Image.open(image_path)
+        # Slice the image into rows of pixels 128 pixels tall
+        slices = []
+        for i in range(0, image.height, 128):
+            box = (0, i, image.width, min(i + 128, image.height))
+            slice = image.crop(box)
+            slices.append(slice)
+
+        # visualize slices
+        for idx, slice in enumerate(slices):
+            slice.show(title=f"Slice {idx}")
+
     def serial_write(self, message):
         try:
             self.ser.write(message)
